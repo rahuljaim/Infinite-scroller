@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinite Scroller</title>
+    <style>
+        #divContent{
+            width: 400px;
+            display: block;
+            margin: 0 auto;
+            border: 2px solid black;
+            text-align: center;
+        }
+        #lastItem{
+            width: 400px;
+            display:block;
+            margin: 5px auto;
+            border: 2px solid black;
+            text-align: center;
+        }
+        .item{
+            width: 300px;
+            height: 50px;
+            margin: 5px auto;
+            border: 2px solid black;
+            text-align: center;
+            line-height: 50px;
+
+        }
+
+    </style>
+</head>
+<body>
+    <div id="divContent">
+
+    </div>
+    <div id="lastItem">
+        End of the list, when this is visible new items will be added.
+    </div>
+    
+</body>
+<script>
+    // function $(id){
+    //     return document.getElementById(id);
+    // }
+    let divContent = document.getElementById("divContent");
+    let lastItem = document.getElementById("lastItem");
+    let itemCount = 0;
+    let appending  = false;
+
+    window.addEventListener('DOMContentLoaded', onload);
+    function load(){
+        addItems();
+    }
+    function addItems(){
+        appending  =true;
+        for(let i =0; i<20; i++){
+            let item = generateDataBlock(['This is item number #',itemCount].join(' '));
+            divContent.appendChild(item);
+            itemCount++;
+        }
+        appending =false;
+
+    }
+    function generateDataBlock(message){
+        let item = document.createElement("div");
+        item.setAttribute('class', 'item');
+        item.textContent=message;
+        return item;
+    }
+    let option ={
+        root: null,
+        rootMargin:'0px',
+        threshold:1.0
+    };
+    
+    let callback = (entries, obeserver)=>{
+        entries.forEach(entry => {
+            if(entry.target.id ==='lastItem'){
+                if(entry.isIntersecting && !appending ){
+                    appending = true;
+                    setTimeout(()=>{
+                        addItems();
+                    },1000);
+                }
+            }
+        });
+    };
+    let obeserver = new IntersectionObserver(callback, option);
+    obeserver.observe(lastItem);
+</script>
+</html>
